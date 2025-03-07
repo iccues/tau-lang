@@ -1,0 +1,8 @@
+[package]
+name = "librarys"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+enum_plus_derive = { path = "enum_plus_derive" }
+asm_macro = { path = "asm_macro" }
