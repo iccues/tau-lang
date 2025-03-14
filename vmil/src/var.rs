@@ -1,3 +1,8 @@
+use std::ops::Deref;
+
+use error::Result;
+use lexer::token::operator::Operator;
+
 use crate::{as_bytes::AsBytes, path::Path, serialize::StrSerialize, types::Types};
 
 pub struct Var {
@@ -54,17 +59,44 @@ impl StrSerialize for Value {
         unimplemented!();
     }
 
-    fn deserialize(reader: &mut dyn std::io::BufRead) -> Self {
-        // let mut buf = [0; 1];
-        // reader.read_exact(&mut buf).unwrap();
-        // match buf[0] {
-        //     b'*' => Value::HeapDeref(Box::new(Value::deserialize(reader))),
-        //     b'%' => Value::StackDeref(Box::new(Value::deserialize(reader))),
-        //     b'&' => Value::HeapBox(Box::new(Value::deserialize(reader))),
-        //     b'$' => Value::StackBox(Box::new(Value::deserialize(reader))),
-        //     b'@' => Value::Use(Box::new(Var::deserialize(reader))),
-        //     _ => Value::Bytes(Box::new(Vec::<u8>::deserialize(reader))),
-        // }
+    // fn deserialize(reader: &mut dyn std::io::BufRead) -> Self {
+    //     // let mut buf = [0; 1];
+    //     // reader.read_exact(&mut buf).unwrap();
+    //     // match buf[0] {
+    //     //     b'*' => Value::HeapDeref(Box::new(Value::deserialize(reader))),
+    //     //     b'%' => Value::StackDeref(Box::new(Value::deserialize(reader))),
+    //     //     b'&' => Value::HeapBox(Box::new(Value::deserialize(reader))),
+    //     //     b'$' => Value::StackBox(Box::new(Value::deserialize(reader))),
+    //     //     b'@' => Value::Use(Box::new(Var::deserialize(reader))),
+    //     //     _ => Value::Bytes(Box::new(Vec::<u8>::deserialize(reader))),
+    //     // }
+    //     unimplemented!();
+    // }
+
+    // fn deserialize(reader: &mut lexer::stream::peekable::Peek<char>) -> Result<Self> {
+    //     match reader.peek()? {
+    //         '*' => {
+    //             reader.next()?;
+    //             Ok(Value::HeapDeref(Box::new(Value::deserialize(reader)?)))
+    //         }
+    //         '%' => {
+    //             reader.next()?;
+    //             Ok(Value::StackDeref(Box::new(Value::deserialize(reader)?)))
+    //         }
+    //         _ => unimplemented!(),
+    //     }
+    // }
+
+    fn deserialize(reader: &mut lexer::stream::peekable::Peek<lexer::token::TokenBox>) -> Result<Self> {
+        if let Ok(op) = reader.eat_type::<Operator>() {
+            match op.deref() {
+                &Operator::Star => {
+                    return Ok(Value::HeapDeref(Box::new(Value::deserialize(reader)?)));
+                }
+                _ => unimplemented!(),
+            }
+        };
         unimplemented!();
     }
+
 }

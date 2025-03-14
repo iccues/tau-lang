@@ -1,4 +1,4 @@
-use librarys::signal::{SignalError, SignalResult};
+use library::signal::{SignalError, SignalResult};
 
 use super::Thread;
 

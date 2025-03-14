@@ -1,5 +1,4 @@
-use crate::error::IResult;
-
+use error::Result;
 use peekable::peeker::Peeker;
 
 pub mod char_stream;
@@ -19,7 +18,15 @@ pub trait ErrorStream {
 pub trait Stream: ErrorStream {
     type Item: Clone;
 
-    fn next(&mut self) -> IResult<Self::Item>;
+    fn next(&mut self) -> Result<Self::Item>;
+    fn nexts(&mut self, n: usize) -> Result<Vec<Self::Item>> {
+        let mut items = Vec::with_capacity(n);
+        for _ in 0..n {
+            items.push(self.next()?);
+        }
+        Ok(items)
+    }
+
     fn peeker(self) -> Peeker<Self::Item> where Self: Sized + 'static {
         Peeker::new(self)
     }
@@ -45,5 +52,4 @@ impl Position {
         self.line += 1;
         self.column = 0;
     }
-
 }

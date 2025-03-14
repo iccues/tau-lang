@@ -1,5 +1,5 @@
 use nom::IResult;
-use librarys::instruction::opcode::Opcode;
+use library::instruction::opcode::Opcode;
 
 use crate::{global::GlobalRc, parser::line::parse_ident};
 

@@ -5,3 +5,5 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
+error = { path = "../library/error" }
+lexer = { path = "../library/lexer" }

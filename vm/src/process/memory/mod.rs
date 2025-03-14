@@ -5,7 +5,7 @@ mod visual_memory;
 mod memory_cursor;
 
 use memory_cursor::MemoryCursor;
-use librarys::signal::{SignalError, SignalResult};
+use library::signal::{SignalError, SignalResult};
 pub(crate) use real_memory::RealMemory;
 pub(crate) use visual_memory::VisualMemroy;
 

@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use librarys::bit_vec::BitVec;
+use library::bit_vec::BitVec;
 
 pub struct ByteVec {
     buf: Vec<BitVec>,

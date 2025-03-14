@@ -1,4 +1,6 @@
-use crate::{error::{ErrKind, IResult}, stream::{ErrorStream, Stream}, token::{ComplexBox, Token, TokenBox}};
+use error::Result;
+
+use crate::{ErrorStream, Stream};
 
 use super::{super::Position, Peekable};
 
@@ -23,18 +25,22 @@ impl<I: Clone> ErrorStream for Cursor<'_, I> {
 
 impl<I: Clone> Stream for Cursor<'_, I> {
     type Item = I;
-    fn next(&mut self) -> IResult<Self::Item> {
+    fn next(&mut self) -> Result<Self::Item> {
         self.next()
     }
 }
 
 impl<T: Clone> Peekable for Cursor<'_, T> {
-    fn peek(&mut self) -> IResult<Self::Item> {
+    fn peek(&mut self) -> Result<Self::Item> {
         self.peek()
     }
 
-    fn peek_n(&mut self, n: usize) -> IResult<Self::Item> {
+    fn peek_n(&mut self, n: usize) -> Result<Self::Item> {
         self.peeker.peek_n(n)
+    }
+
+    fn peeks(&mut self, n: usize) -> Result<Vec<Self::Item>> {
+        Ok(self.peeker.peeks(n + self.cursor)?.into_iter().skip(self.cursor).collect())
     }
 }
 
@@ -46,11 +52,11 @@ impl<'a, I: Clone> Cursor<'a, I> {
         }
     }
 
-    pub fn peek(&mut self) -> IResult<I> {
+    pub fn peek(&mut self) -> Result<I> {
         self.peeker.peek_n(self.cursor)
     }
 
-    pub fn next(&mut self) -> IResult<I> {
+    pub fn next(&mut self) -> Result<I> {
         self.cursor += 1;
         self.peeker.peek_n(self.cursor - 1)
     }
@@ -75,22 +81,22 @@ impl<'a, I: Clone> Cursor<'a, I> {
     }
 }
 
-impl Cursor<'_, TokenBox> {
-    pub fn eat_type<T: Token>(&mut self) -> IResult<ComplexBox<T>> {
-        if let Some(item) = self.peek()?.downcast() {
-            let _ = self.next();
-            Ok(item)
-        } else {
-            Err(ErrKind::Error(crate::error::Error::None))
-        }
-    }
+// impl Cursor<'_, TokenBox> {
+//     pub fn eat_type<T: Token>(&mut self) -> IResult<ComplexBox<T>> {
+//         if let Some(item) = self.peek()?.downcast() {
+//             let _ = self.next();
+//             Ok(item)
+//         } else {
+//             Err(ErrKind::Error(crate::error::Error::None))
+//         }
+//     }
 
-    pub fn eat_eq(&mut self, value: &dyn Token) -> IResult<()> {
-        if self.peek()?.eq(value) {
-            let _ = self.next();
-            Ok(())
-        } else {
-            Err(ErrKind::Error(crate::error::Error::None))
-        }
-    }
-}
+//     pub fn eat_eq(&mut self, value: &dyn Token) -> IResult<()> {
+//         if self.peek()?.eq(value) {
+//             let _ = self.next();
+//             Ok(())
+//         } else {
+//             Err(ErrKind::Error(crate::error::Error::None))
+//         }
+//     }
+// }

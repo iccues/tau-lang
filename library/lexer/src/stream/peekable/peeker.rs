@@ -1,16 +1,17 @@
 use std::collections::VecDeque;
 
-use crate::error::IResult;
-use crate::stream::{Position, ErrorStream, Stream};
+use error::Result;
+
+use crate::stream::{ErrorStream, Position, Stream};
 
 use super::Peekable;
 
-pub struct Peeker<T: Clone> {
-    inner: Box<dyn Stream<Item = T>>,
-    buffer: VecDeque<(Position, Position, IResult<T>)>,
+pub struct Peeker<I: Clone> {
+    inner: Box<dyn Stream<Item = I>>,
+    buffer: VecDeque<(Position, Position, Result<I>)>,
 }
 
-impl<T: Clone> ErrorStream for Peeker<T> {
+impl<I: Clone> ErrorStream for Peeker<I> {
     fn inner(&self) -> &dyn ErrorStream {
         panic!();
     }
@@ -32,25 +33,38 @@ impl<T: Clone> ErrorStream for Peeker<T> {
     }
 }
 
-impl<T: Clone> Stream for Peeker<T> {
-    type Item = T;
-    
-    fn next(&mut self) -> IResult<Self::Item> {
+impl<I: Clone> Stream for Peeker<I> {
+    type Item = I;
+
+    fn next(&mut self) -> Result<Self::Item> {
         self.next()
     }
 }
 
-impl<T:Clone> Peekable for Peeker<T> {
-    fn peek(&mut self) -> IResult<Self::Item> {
+impl<I: Clone> Peekable for Peeker<I> {
+    fn peek(&mut self) -> Result<Self::Item> {
         self.peek()
     }
-    fn peek_n(&mut self, n: usize) -> IResult<Self::Item> {
+
+    fn peek_n(&mut self, n: usize) -> Result<Self::Item> {
         self.peek_n(n)
+    }
+
+    fn peeks<'a>(&'a mut self, n: usize) -> Result<Vec<Self::Item>> {
+        for _ in self.buffer.len()..n {
+            self.get_next();
+        }
+
+        self.buffer
+            .iter()
+            .take(n)
+            .map(|x| x.2.clone())
+            .collect::<Result<Vec<I>>>()
     }
 }
 
-impl<T: Clone> Peeker<T> {
-    pub fn new(inner: impl Stream<Item = T> + 'static) -> Self {
+impl<I: Clone> Peeker<I> {
+    pub fn new(inner: impl Stream<Item = I> + 'static) -> Self {
         Self {
             inner: Box::new(inner),
             buffer: VecDeque::new(),
@@ -64,40 +78,34 @@ impl<T: Clone> Peeker<T> {
         self.buffer.push_back((last_position, next_position, item));
     }
 
-    pub fn peek(&mut self) -> IResult<T> {
+    pub fn peek(&mut self) -> Result<I> {
         if self.buffer.is_empty() {
             self.get_next();
         }
         self.buffer[0].2.clone()
     }
 
-    pub fn peek_n(&mut self, n: usize) -> IResult<T> {
+    pub fn peek_n(&mut self, n: usize) -> Result<I> {
         for _ in self.buffer.len()..n + 1 {
             self.get_next();
         }
         self.buffer[n].2.clone()
     }
 
-    pub fn next(&mut self) -> IResult<T> {
+    pub fn next(&mut self) -> Result<I> {
         if self.buffer.is_empty() {
             self.get_next();
         }
         self.buffer.pop_front().unwrap().2
     }
-
 }
 
 impl Peeker<char> {
-    pub fn peeks(&mut self, n: usize) -> IResult<String> {
+    pub fn peeks(&mut self, n: usize) -> Result<String> {
         for _ in self.buffer.len()..n {
             self.get_next();
         }
-        let a: Vec<IResult<char>> = self
-            .buffer
-            .iter()
-            .take(n)
-            .map(|x| x.2.clone())
-            .collect();
+        let a: Vec<Result<char>> = self.buffer.iter().take(n).map(|x| x.2.clone()).collect();
         a.into_iter().collect()
     }
 }

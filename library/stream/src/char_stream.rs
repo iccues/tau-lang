@@ -1,6 +1,7 @@
 use std::io::{BufRead, Lines};
+use error::{ErrKind, NoneError, Result};
+use crate::peekable::Peek;
 
-use crate::error::IResult;
 use super::{Position, ErrorStream, Stream};
 
 
@@ -21,16 +22,17 @@ impl CharStream {
         }
     }
 
-    pub fn next(&mut self) -> IResult<char> {
+    pub fn next(&mut self) -> Result<char> {
         self.position.move_right();
         if self.position.column >= self.line.len() {
-            if let Some(line) = self.reader.next() {
-                self.line = line?.chars().collect();
-                self.line.push('\n');
-                self.position.move_down();
-            }
-            else {
-                return Ok(EOF_CHAR);
+            match self.reader.next() {
+                Some(Ok(line)) => {
+                    self.line = line.chars().collect();
+                    self.line.push('\n');
+                    self.position.move_down();
+                }
+                Some(Err(err)) => return Err(err.into()),
+                None => return Ok(EOF_CHAR),
             }
         }
         Ok(self.line[self.position.column])
@@ -40,14 +42,14 @@ impl CharStream {
 impl Stream for CharStream {
     type Item = char;
 
-    fn next(&mut self) -> IResult<Self::Item> {
+    fn next(&mut self) -> Result<Self::Item> {
         self.next()
     }
 }
 
 impl ErrorStream for CharStream {
     fn inner(&self) -> &dyn ErrorStream {
-        panic!();
+        unreachable!();
     }
 
     fn last_position(&self) -> Position {
@@ -59,6 +61,28 @@ impl ErrorStream for CharStream {
     }
 }
 
+
+impl Peek<char> {
+    pub fn peek_str(&mut self, n: usize) -> Result<String> {
+        Ok(self.peeks(n)?.into_iter().collect())
+    }
+
+    pub fn eat_str(&mut self, s: &str) -> Result<()> {
+        if self.peek_str(s.len())? == s {
+            self.nexts(s.len())?;
+            Ok(())
+        } else {
+            Err(ErrKind::Error(NoneError.into()))
+        }
+    }
+
+    pub fn eat_whitespace(&mut self) -> Result<()> {
+        while self.peek()?.is_whitespace() {
+            self.next()?;
+        }
+        Ok(())
+    }
+}
 
 // #[cfg(test)]
 // mod tests {

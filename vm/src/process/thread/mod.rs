@@ -3,7 +3,7 @@ pub mod thread_status;
 
 use thread_stack::ThreadStack;
 
-use librarys::signal::Signal;
+use library::signal::Signal;
 use thread_status::ThreadStatus;
 
 use crate::process::memory::*;

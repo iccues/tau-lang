@@ -1,8 +1,9 @@
+use error::Result;
+
 use crate::stream::peekable::Peekable;
 use crate::stream::{ErrorStream, peekable::peeker::Peeker, Stream};
 use crate::token::operator::Operator;
 use crate::token::TokenBox;
-use crate::error::IResult;
 use crate::token::keyword::Keyword;
 
 pub struct TokenProcessor {
@@ -12,7 +13,7 @@ pub struct TokenProcessor {
 impl Stream for TokenProcessor {
     type Item = TokenBox;
 
-    fn next(&mut self) -> IResult<Self::Item> {
+    fn next(&mut self) -> Result<Self::Item> {
         self.next_token()
     }
 }
@@ -28,7 +29,7 @@ impl TokenProcessor {
         Self { input }
     }
 
-    pub fn next_token(&mut self) -> IResult<TokenBox> {
+    pub fn next_token(&mut self) -> Result<TokenBox> {
         let cursor = &mut self.input.cursor();
 
         if let Some(t) = Keyword::parse(cursor) {

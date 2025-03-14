@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "librarys",
-    "librarys/enum_plus_derive",
-    "librarys/asm_macro",
+    "library",
+    "library/enum_plus_derive",
+    "library/asm_macro",
 
     "vm",
 

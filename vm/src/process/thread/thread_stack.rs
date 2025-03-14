@@ -1,8 +1,8 @@
 use std::ops::Index;
 use std::ops::IndexMut;
 
-use librarys::signal::SignalError;
-use librarys::signal::SignalResult;
+use library::signal::SignalError;
+use library::signal::SignalResult;
 
 
 #[derive(Debug)]

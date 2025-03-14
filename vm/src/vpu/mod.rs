@@ -2,7 +2,7 @@ mod syscall;
 mod ret_call_0;
 mod ilvpu;
 
-use librarys::{instruction::opcode::code::Code, signal::{Signal, SignalResult}};
+use library::{instruction::opcode::code::Code, signal::{Signal, SignalResult}};
 
 use crate::process::thread::{thread_status::ThreadStatus, Thread};
 

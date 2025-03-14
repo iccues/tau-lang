@@ -1,5 +1,7 @@
+use error::{ErrKind, NoneError, Result};
+
 use crate::stream::char_stream::EOF_CHAR;
-use crate::error::{ErrKind, Error, IResult};
+// use crate::error::{ErrKind, Error, Result};
 use crate::stream::{ErrorStream, peekable::peeker::Peeker, Stream};
 use crate::token::comment::Comment;
 use crate::token::identifier::Identifier;
@@ -17,7 +19,7 @@ pub struct Lexer {
 impl Stream for Lexer {
     type Item = TokenBox;
 
-    fn next(&mut self) -> IResult<Self::Item> {
+    fn next(&mut self) -> Result<Self::Item> {
         self.next_token()
     }
 }
@@ -35,7 +37,7 @@ impl Lexer {
         }
     }
 
-    pub fn next_token(&mut self) -> IResult<TokenBox> {
+    pub fn next_token(&mut self) -> Result<TokenBox> {
         self.skip_whitespace()?;
 
         try_parse!(self.parse_comment());
@@ -45,10 +47,10 @@ impl Lexer {
         try_parse!(self.parse_operator());
         try_parse!(self.parse_eof());
 
-        Err(ErrKind::Error(Error::UnkonwnToken))
+        Err(ErrKind::Error(NoneError.into()))
     }
 
-    fn skip_whitespace(&mut self) -> IResult<()> {
+    fn skip_whitespace(&mut self) -> Result<()> {
         loop {
             if self.char_peeker.peek()?.is_whitespace() {
                 self.char_peeker.next()?;
@@ -60,7 +62,7 @@ impl Lexer {
         Ok(())
     }
 
-    fn parse_comment(&mut self) -> IResult<TokenBox> {
+    fn parse_comment(&mut self) -> Result<TokenBox> {
         match &self.char_peeker.peeks(2)?[..] {
             "//" => {
                 let mut text = String::new();
@@ -94,11 +96,11 @@ impl Lexer {
                 Ok(Comment::new(Some(text)))
     
             }
-            _ => Err(ErrKind::Error(Error::UnkonwnToken)),
+            _ => Err(ErrKind::Error(NoneError.into())),
         }
     }
 
-    fn parse_ident(&mut self) -> IResult<TokenBox> {
+    fn parse_ident(&mut self) -> Result<TokenBox> {
         let mut c = self.char_peeker.peek()?;
         
         if c.is_alphabetic() || c == '_' {
@@ -111,11 +113,11 @@ impl Lexer {
         }
 
         else {
-            Err(ErrKind::Error(Error::UnkonwnToken))
+            Err(NoneError.into())
         }
     }
 
-    fn parse_number(&mut self) -> IResult<TokenBox> {
+    fn parse_number(&mut self) -> Result<TokenBox> {
         let mut c = self.char_peeker.peek()?;
 
         if c.is_numeric() {
@@ -138,11 +140,11 @@ impl Lexer {
         }
 
         else {
-            Err(ErrKind::Error(Error::UnkonwnToken))
+            Err(ErrKind::Error(NoneError.into()))
         }
     }
 
-    fn parse_string(&mut self) -> IResult<TokenBox> {
+    fn parse_string(&mut self) -> Result<TokenBox> {
         let mut c = self.char_peeker.peek()?;
 
         if c == '"' {
@@ -156,26 +158,26 @@ impl Lexer {
             string.push(self.char_peeker.next()?);
             Ok(StringToken::new(string))
         } else {
-            Err(ErrKind::Error(Error::UnkonwnToken))
+            Err(ErrKind::Error(NoneError.into()))
         }
     }
 
-    fn parse_operator(&mut self) -> IResult<TokenBox> {
+    fn parse_operator(&mut self) -> Result<TokenBox> {
         let c = self.char_peeker.peek()?;
         if let Some(token_type) = Operator::parse(c) {
             self.char_peeker.next()?;
             Ok(token_type)
         }
         else {
-            Err(ErrKind::Error(Error::UnkonwnToken))
+            Err(ErrKind::Error(NoneError.into()))
         }
     }
 
-    fn parse_eof(&mut self) -> IResult<TokenBox> {
+    fn parse_eof(&mut self) -> Result<TokenBox> {
         if self.char_peeker.peek()? == EOF_CHAR {
             Ok(EofToken::new())
         } else {
-            Err(ErrKind::Error(Error::UnkonwnToken))
+            Err(ErrKind::Error(NoneError.into()))
         }
     }
 }

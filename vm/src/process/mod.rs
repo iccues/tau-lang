@@ -5,7 +5,7 @@ pub mod threads;
 use std::ops::DerefMut;
 
 use memory::*;
-use librarys::signal::{SignalError, SignalResult};
+use library::signal::{SignalError, SignalResult};
 use threads::Threads;
 
 #[derive(Debug)]

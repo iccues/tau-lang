@@ -9,7 +9,7 @@ use crate::{global::GlobalRc, parser::Handle};
 
 use crate::error::Error;
 
-pub use librarys::instruction::Instruction;
+pub use library::instruction::Instruction;
 
 impl Handle for Instruction {
     fn handle(&self, global: &GlobalRc) {

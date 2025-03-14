@@ -8,11 +8,11 @@ use nom::{
 
 use crate::global::symbol_table::SymbolTableEntry;
 use crate::{error::ResultExt, global::GlobalRc, parser::line::parse_ident};
-use librarys::bit_vec::{ucode, AsBits};
+use library::bit_vec::{ucode, AsBits};
 
 use crate::error::Error;
 
-use librarys::instruction::arg::Arg;
+use library::instruction::arg::Arg;
 
 pub struct ArgParser {
     global: GlobalRc,

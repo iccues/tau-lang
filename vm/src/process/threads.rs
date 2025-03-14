@@ -1,6 +1,6 @@
 use std::ptr::null_mut;
 
-use librarys::signal::{SignalError, SignalResult};
+use library::signal::{SignalError, SignalResult};
 
 use crate::process::Process;
 use super::thread::Thread;

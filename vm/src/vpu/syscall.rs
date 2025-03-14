@@ -1,5 +1,5 @@
-use librarys::instruction::opcode::syscall::Syscall;
-use librarys::signal::SignalResult;
+use library::instruction::opcode::syscall::Syscall;
+use library::signal::SignalResult;
 
 use crate::process::thread::thread_status::ThreadStatus;
 use crate::process::thread::Thread;
