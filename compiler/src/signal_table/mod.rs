@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
 // mod callable;
-mod types;
-mod variable;
-mod traits;
-mod module;
-mod func;
-mod path;
+pub mod types;
+pub mod variable;
+pub mod traits;
+pub mod module;
+pub mod func;
+pub mod path;
 
 use module::Module;
 
