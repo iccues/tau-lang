@@ -6,7 +6,6 @@ use super::expr::Expr;
 pub enum Stmt {
     Expr(Box<Expr>),
     Def,
-    
 }
 
 impl Stmt {

@@ -1,4 +1,4 @@
-use std::fs::File;
+use compiler::parser;
 use std::env::args;
 use std::io::BufReader;
 
@@ -26,45 +26,4 @@ fn main() {
     }
 
     parser(&args[1]);
-    // print_token(&args[1]);
-
-}
-
-fn parser(input: &str) {
-    let input = File::open(input).unwrap();
-    let char_stream = CharStream::new(BufReader::new(input)).peeker();
-    let lexer = Lexer::new(char_stream).peeker();
-    let mut token_processor = TokenProcessor::new(lexer).peeker();
-
-    let mut cursor = token_processor.cursor();
-
-    let signal_table = SignalTable::parse(&mut cursor).unwrap();
-    println!("{:?}", signal_table);
-}
-
-#[allow(dead_code)]
-fn print_token(input: &str) {
-    let input = File::open(input).unwrap();
-    let char_stream = CharStream::new(BufReader::new(input)).peeker();
-    let lexer = Lexer::new(char_stream).peeker();
-    let mut token_processor = TokenProcessor::new(lexer).peeker();
-
-    loop {
-        let token = token_processor.next().unwrap();
-        if token.is::<EofToken>() {
-            break;
-        }
-        println!("{:?}", token);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parser() {
-        // println!("{}", std::env::current_dir().unwrap().display());
-        parser("../tests/hello.plang");
-    }
 }

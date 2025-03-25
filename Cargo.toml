@@ -8,5 +8,6 @@ members = [
 
     "asm",
     "compiler",
+    "interpreter",
     "vmil",
 ]

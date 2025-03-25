@@ -1,0 +1,8 @@
+[package]
+name = "interpreter"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+compiler = { path = "../compiler" }
+downcast-rs = "2.0.1"
