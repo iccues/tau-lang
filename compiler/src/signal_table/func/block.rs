@@ -1,6 +1,6 @@
-use crate::error::IResult;
-use crate::stream::peekable::cursor::Cursor;
-use crate::token::{operator::Operator, TokenBox};
+use error::Result;
+use lexer::stream::peekable::cursor::Cursor;
+use lexer::token::{operator::Operator, TokenBox};
 
 use super::expr::Expr;
 
@@ -11,7 +11,7 @@ pub struct Block {
 }
 
 impl Block {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<Box<Expr>> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<Box<Expr>> {
         cursor.eat_eq(&Operator::OpenBrace)?;
 
         let mut statments = Vec::new();

@@ -3,7 +3,7 @@ use error::NoneError;
 use error::Result;
 use super::peekable::Peek;
 
-use super::{Position, ErrorStream, Stream};
+use super::{Position, Stream};
 
 
 pub const EOF_CHAR: char = '\0';
@@ -46,17 +46,10 @@ impl Stream for CharStream {
     fn next(&mut self) -> Result<Self::Item> {
         self.next()
     }
-}
-
-impl ErrorStream for CharStream {
-    fn inner(&self) -> &dyn ErrorStream {
-        unreachable!();
-    }
 
     fn last_position(&self) -> Position {
         self.position
     }
-
     fn next_position(&self) -> Position {
         self.position
     }

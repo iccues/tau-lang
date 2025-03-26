@@ -5,14 +5,16 @@ use lexer::token::operator::Operator;
 
 use crate::{as_bytes::AsBytes, path::Path, serialize::StrSerialize, types::Types};
 
+#[derive(Debug)]
 pub struct Var {
     var_type: Box<Types>,
     pub value: Value,
 }
 
+#[derive(Debug)]
 pub enum Value {
     //
-    Bytes(Box<dyn AsBytes>),
+    // Bytes(Box<dyn AsBytes>),
     // *
     HeapDeref(Box<Value>),
     // %

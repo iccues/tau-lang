@@ -1,5 +1,4 @@
-use crate::{
-    error::{ErrKind, IResult},
+use lexer::{
     stream::peekable::cursor::Cursor,
     token::{
         number::{Float, Integer},
@@ -7,6 +6,7 @@ use crate::{
         TokenBox,
     },
 };
+use error::{NoneError, Result};
 
 use super::expr::Expr;
 
@@ -19,7 +19,7 @@ pub enum Literal {
 }
 
 impl Literal {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<Box<Expr>> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<Box<Expr>> {
         if let Ok(integer) = cursor.eat_type::<Integer>() {
             return Ok(Box::new(Expr::Literal(Literal::Integer(integer.number()))));
         }
@@ -29,6 +29,6 @@ impl Literal {
         if let Ok(string) = cursor.eat_type::<StringToken>() {
             return Ok(Box::new(Expr::Literal(Literal::String(string.string()))));
         }
-        Err(ErrKind::Error(crate::error::Error::None))
+        Err(NoneError.into())
     }
 }

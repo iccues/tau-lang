@@ -8,18 +8,23 @@ pub struct GError {
     inner: Rc<dyn std::error::Error + Send + Sync>,
 }
 
+impl GError {
+    pub fn new<T: std::error::Error + Send + Sync + 'static>(value: T) -> Self {
+        GError {
+            inner: Rc::new(value),
+        }
+    }
+}
+
 impl Display for GError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "GError: {}", self.inner)
     }
 }
 
-
 impl<T: std::error::Error + Send + Sync + 'static> From<T> for GError {
     fn from(value: T) -> Self {
-        GError {
-            inner: Rc::new(value),
-        }
+        GError::new(value)
     }
 }
 

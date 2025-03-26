@@ -1,7 +1,7 @@
 use error::Result;
 
 use crate::stream::peekable::Peekable;
-use crate::stream::{ErrorStream, peekable::peeker::Peeker, Stream};
+use crate::stream::{peekable::peeker::Peeker, Stream};
 use crate::token::operator::Operator;
 use crate::token::TokenBox;
 use crate::token::keyword::Keyword;
@@ -16,11 +16,12 @@ impl Stream for TokenProcessor {
     fn next(&mut self) -> Result<Self::Item> {
         self.next_token()
     }
-}
 
-impl ErrorStream for TokenProcessor {
-    fn inner(&self) -> &dyn ErrorStream {
-        &self.input
+    fn last_position(&self) -> crate::stream::Position {
+        self.input.last_position()
+    }
+    fn next_position(&self) -> crate::stream::Position {
+        self.input.next_position()
     }
 }
 

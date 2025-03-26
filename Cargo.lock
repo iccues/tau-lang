@@ -22,6 +22,10 @@ dependencies = [
 [[package]]
 name = "compiler"
 version = "0.1.0"
+dependencies = [
+ "error",
+ "lexer",
+]
 
 [[package]]
 name = "enum_plus_derive"

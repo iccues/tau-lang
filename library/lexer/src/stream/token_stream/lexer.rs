@@ -2,7 +2,7 @@ use error::{ErrKind, NoneError, Result};
 
 use crate::stream::char_stream::EOF_CHAR;
 // use crate::error::{ErrKind, Error, Result};
-use crate::stream::{ErrorStream, peekable::peeker::Peeker, Stream};
+use crate::stream::{peekable::peeker::Peeker, Stream};
 use crate::token::comment::Comment;
 use crate::token::identifier::Identifier;
 use crate::token::number::{Float, Integer};
@@ -22,11 +22,12 @@ impl Stream for Lexer {
     fn next(&mut self) -> Result<Self::Item> {
         self.next_token()
     }
-}
 
-impl ErrorStream for Lexer {
-    fn inner(&self) -> &dyn ErrorStream {
-        &self.char_peeker
+    fn last_position(&self) -> crate::stream::Position {
+        self.char_peeker.last_position()
+    }
+    fn next_position(&self) -> crate::stream::Position {
+        self.char_peeker.next_position()
     }
 }
 

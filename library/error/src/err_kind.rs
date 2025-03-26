@@ -12,8 +12,21 @@ impl<E> From<E> for ErrKind<E> {
     }
 }
 
-impl<E: std::error::Error> From<E> for ErrKind<GError> {
+impl<E: std::error::Error + Send + Sync + 'static> From<E> for ErrKind<GError> {
     fn from(value: E) -> Self {
-        value.into()
+        Self::Error(GError::new(value))
+    }
+}
+
+pub trait ResultExt {
+    fn failure(self) -> Self;
+}
+
+impl<T, E> ResultExt for super::Result<T, E> {
+    fn failure(self) -> Self {
+        match self {
+            Err(ErrKind::Error(e)) => Err(ErrKind::Failure(e)),
+            other => other,
+        }
     }
 }

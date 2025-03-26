@@ -1,4 +1,4 @@
-use std::io::{BufRead, Write};
+use std::io::Write;
 
 use error::Result;
 use lexer::{stream::peekable::Peek, token::TokenBox};

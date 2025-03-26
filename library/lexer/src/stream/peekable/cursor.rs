@@ -1,6 +1,6 @@
 use error::{NoneError, Result};
 
-use crate::{stream::{ErrorStream, Stream}, token::{ComplexBox, Token, TokenBox}};
+use crate::{stream::Stream, token::{ComplexBox, Token, TokenBox}};
 
 use super::{super::Position, Peekable};
 
@@ -9,24 +9,17 @@ pub struct Cursor<'a, I: Clone> {
     cursor: usize,
 }
 
-impl<I: Clone> ErrorStream for Cursor<'_, I> {
-    fn inner(&self) -> &dyn ErrorStream {
-        panic!();
+impl<I: Clone> Stream for Cursor<'_, I> {
+    type Item = I;
+    fn next(&mut self) -> Result<Self::Item> {
+        self.next()
     }
 
     fn last_position(&self) -> Position {
         self.peeker.last_position()
     }
-
     fn next_position(&self) -> Position {
         self.peeker.next_position()
-    }
-}
-
-impl<I: Clone> Stream for Cursor<'_, I> {
-    type Item = I;
-    fn next(&mut self) -> Result<Self::Item> {
-        self.next()
     }
 }
 

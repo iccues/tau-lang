@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 use crate::signal_table::types::Type;
-use crate::stream::peekable::cursor::Cursor;
-use crate::token::identifier::Identifier;
-use crate::token::keyword::Keyword;
-use crate::error::{ErrKind, IResult, IResultExt};
-use crate::token::operator::Operator;
-use crate::token::singleton_token::EofToken;
-use crate::token::TokenBox;
+use lexer::stream::peekable::cursor::Cursor;
+use lexer::token::identifier::Identifier;
+use lexer::token::keyword::Keyword;
+use error::{ErrKind, NoneError, Result, ResultExt};
+use lexer::token::operator::Operator;
+use lexer::token::singleton_token::EofToken;
+use lexer::token::TokenBox;
 use crate::try_parse;
 
 use super::func::Func;
@@ -22,12 +22,12 @@ pub enum ModuleItem {
 }
 
 impl ModuleItem {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<(ModuleItem, String)> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<(ModuleItem, String)> {
         try_parse!(Module::parse(cursor));
         try_parse!(Type::parse(cursor));
         try_parse!(Variable::parse(cursor));
         try_parse!(Func::parse(cursor));
-        Err(ErrKind::Error(crate::error::Error::None))
+        Err(NoneError.into())
     }
 }
 
@@ -39,7 +39,7 @@ pub struct Module {
 }
 
 impl Module {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<(ModuleItem, String)> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<(ModuleItem, String)> {
         cursor.eat_eq(&Keyword::Mod)?;
         let name = cursor.eat_type::<Identifier>()?.name();
         cursor.eat_eq(&Operator::OpenBrace)?;
@@ -51,7 +51,7 @@ impl Module {
         Ok((ModuleItem::Module(module), name))
     }
 
-    pub fn parser_inner(cursor: &mut Cursor<TokenBox>) -> IResult<Module> {
+    pub fn parser_inner(cursor: &mut Cursor<TokenBox>) -> Result<Module> {
         let mut map = HashMap::new();
 
         while !cursor.peek()?.eq(&Operator::CloseBrace) && !cursor.peek()?.is::<EofToken>() {

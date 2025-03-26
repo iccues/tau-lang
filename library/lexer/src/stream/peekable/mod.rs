@@ -16,4 +16,3 @@ pub trait Peekable: Stream {
         Cursor::new(self)
     }
 }
-

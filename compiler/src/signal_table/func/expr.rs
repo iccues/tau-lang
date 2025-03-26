@@ -1,11 +1,13 @@
 use crate::{
-    error::{ErrKind, IResult},
     signal_table::func::{block::Block, if_expr::IfExpr, literal::Literal},
-    stream::peekable::cursor::Cursor,
-    token::{identifier::Identifier, operator::Operator, ComplexBox, TokenBox},
     try_parse,
 };
 
+use error::{ErrKind, NoneError, Result};
+use lexer::{
+    stream::peekable::cursor::Cursor,
+    token::{identifier::Identifier, operator::Operator, ComplexBox, TokenBox},
+};
 use super::while_expr::WhileExpr;
 
 #[derive(Debug)]
@@ -30,7 +32,7 @@ pub enum Expr {
 }
 
 impl Expr {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<Box<Expr>> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<Box<Expr>> {
         let mut factors = Vec::new();
         let mut operators: Vec<ComplexBox<Operator>> = Vec::new();
 
@@ -75,22 +77,22 @@ impl Expr {
         Ok(factors.pop().unwrap())
     }
 
-    pub fn parse_factor(cursor: &mut Cursor<TokenBox>) -> IResult<Box<Expr>> {
+    pub fn parse_factor(cursor: &mut Cursor<TokenBox>) -> Result<Box<Expr>> {
         try_parse!(Block::parse(cursor));
         try_parse!(IfExpr::parse(cursor));
         try_parse!(WhileExpr::parse(cursor));
         try_parse!(Literal::parse(cursor));
         try_parse!(Self::parse_id(cursor));
         try_parse!(Self::parse_unary(cursor));
-        Err(ErrKind::Error(crate::error::Error::None))
+        Err(NoneError.into())
     }
 
-    fn parse_id(cursor: &mut Cursor<TokenBox>) -> IResult<Box<Expr>> {
+    fn parse_id(cursor: &mut Cursor<TokenBox>) -> Result<Box<Expr>> {
         let id = cursor.eat_type::<Identifier>()?;
         Ok(Box::new(Expr::Identifier(id.name())))
     }
 
-    fn parse_unary(cursor: &mut Cursor<TokenBox>) -> IResult<Box<Expr>> {
+    fn parse_unary(cursor: &mut Cursor<TokenBox>) -> Result<Box<Expr>> {
         let operator = cursor.eat_type::<Operator>()?;
         let expr = Self::parse(cursor)?;
         Ok(Box::new(Expr::UnaryExpr { operator, expr }))

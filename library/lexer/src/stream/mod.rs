@@ -5,17 +5,17 @@ pub mod char_stream;
 pub mod token_stream;
 pub mod peekable;
 
-pub trait ErrorStream {
-    fn inner(&self) -> &dyn ErrorStream;
-    fn last_position(&self) -> Position {
-        self.inner().last_position()
-    }
-    fn next_position(&self) -> Position {
-        self.inner().next_position()
-    }
-}
+// pub trait ErrorStream {
+//     fn inner(&self) -> &dyn ErrorStream;
+//     fn last_position(&self) -> Position {
+//         self.inner().last_position()
+//     }
+//     fn next_position(&self) -> Position {
+//         self.inner().next_position()
+//     }
+// }
 
-pub trait Stream: ErrorStream {
+pub trait Stream {
     type Item: Clone;
 
     fn next(&mut self) -> Result<Self::Item>;
@@ -30,6 +30,9 @@ pub trait Stream: ErrorStream {
     fn peeker(self) -> Peeker<Self::Item> where Self: Sized + 'static {
         Peeker::new(self)
     }
+
+    fn last_position(&self) -> Position;
+    fn next_position(&self) -> Position;
 }
 
 

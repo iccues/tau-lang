@@ -1,5 +1,6 @@
 use crate::table::Table;
 
+#[derive(Debug)]
 pub struct Path {
     names: Vec<String>,
 }

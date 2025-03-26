@@ -16,6 +16,7 @@ pub enum Keyword {
     If,
     Else,
     While,
+    Self_,
 }
 
 const LET_KEYWORD: Keyword = Keyword::Let;
@@ -27,6 +28,7 @@ const FUNC_KEYWORD: Keyword = Keyword::Func;
 const IF_KEYWORD: Keyword = Keyword::If;
 const ELSE_KEYWORD: Keyword = Keyword::Else;
 const WHILE_KEYWORD: Keyword = Keyword::While;
+const SELF_KEYWORD: Keyword = Keyword::Self_;
 
 impl Keyword {
     pub fn parse(cursor: &mut Cursor<TokenBox>) -> Option<TokenBox> {
@@ -41,6 +43,7 @@ impl Keyword {
                 "if" => Some(ComplexBox::Ref(&IF_KEYWORD)),
                 "else" => Some(ComplexBox::Ref(&ELSE_KEYWORD)),
                 "while" => Some(ComplexBox::Ref(&WHILE_KEYWORD)),
+                "self" => Some(ComplexBox::Ref(&SELF_KEYWORD)),
                 _ => {
                     cursor.reset();
                     None

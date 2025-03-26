@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use error::Result;
 
-use crate::stream::{ErrorStream, Position, Stream};
+use crate::stream::{Position, Stream};
 
 use super::Peekable;
 
@@ -11,9 +11,11 @@ pub struct Peeker<I: Clone> {
     buffer: VecDeque<(Position, Position, Result<I>)>,
 }
 
-impl<I: Clone> ErrorStream for Peeker<I> {
-    fn inner(&self) -> &dyn ErrorStream {
-        panic!();
+impl<I: Clone> Stream for Peeker<I> {
+    type Item = I;
+
+    fn next(&mut self) -> Result<Self::Item> {
+        self.next()
     }
 
     fn last_position(&self) -> Position {
@@ -23,21 +25,12 @@ impl<I: Clone> ErrorStream for Peeker<I> {
             self.buffer[0].0
         }
     }
-
     fn next_position(&self) -> Position {
         if self.buffer.is_empty() {
             self.inner.next_position()
         } else {
             self.buffer[0].1
         }
-    }
-}
-
-impl<I: Clone> Stream for Peeker<I> {
-    type Item = I;
-
-    fn next(&mut self) -> Result<Self::Item> {
-        self.next()
     }
 }
 

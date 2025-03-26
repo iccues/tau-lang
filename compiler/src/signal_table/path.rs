@@ -1,7 +1,7 @@
-use crate::error::{IResult, IResultExt};
-use crate::stream::peekable::cursor::Cursor;
-use crate::token::operator::Operator;
-use crate::token::{identifier::Identifier, TokenBox};
+use error::{Result, ResultExt};
+use lexer::stream::peekable::cursor::Cursor;
+use lexer::token::operator::Operator;
+use lexer::token::{identifier::Identifier, TokenBox};
 
 #[derive(Debug)]
 pub struct Path {
@@ -9,7 +9,7 @@ pub struct Path {
 }
 
 impl Path {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<Path> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<Path> {
         let mut names = vec![];
 
         names.push(cursor.eat_type::<Identifier>()?.name());

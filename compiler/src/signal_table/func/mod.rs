@@ -1,9 +1,9 @@
 use expr::Expr;
 
-use crate::error::IResult;
-use crate::stream::peekable::cursor::Cursor;
-use crate::token::operator::Operator;
-use crate::token::{identifier::Identifier, keyword::Keyword, TokenBox};
+use error::Result;
+use lexer::stream::peekable::cursor::Cursor;
+use lexer::token::operator::Operator;
+use lexer::token::{identifier::Identifier, keyword::Keyword, TokenBox};
 
 use super::module::ModuleItem;
 
@@ -21,7 +21,7 @@ pub struct Func {
 }
 
 impl Func {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<(ModuleItem, String)> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<(ModuleItem, String)> {
         cursor.eat_eq(&Keyword::Func)?;
         let name = cursor.eat_type::<Identifier>()?.name();
         cursor.eat_eq(&Operator::OpenParen)?;

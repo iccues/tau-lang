@@ -1,16 +1,15 @@
 #![allow(dead_code)]
 
-// mod callable;
 mod types;
 mod variable;
-mod traits;
 mod module;
 mod func;
 mod path;
 
 use module::Module;
 
-use crate::{error::IResult, stream::peekable::cursor::Cursor, token::{singleton_token::EofToken, TokenBox}};
+use lexer::{stream::peekable::cursor::Cursor, token::{singleton_token::EofToken, TokenBox}};
+use error::Result;
 
 #[macro_export]
 macro_rules! try_parse {
@@ -33,7 +32,7 @@ pub struct SignalTable {
 }
 
 impl SignalTable {
-    pub fn parse(cursor: &mut Cursor<TokenBox>) -> IResult<SignalTable> {
+    pub fn parse(cursor: &mut Cursor<TokenBox>) -> Result<SignalTable> {
         let inner = Module::parser_inner(cursor)?;
         cursor.eat_eq(&EofToken)?;
         Ok(SignalTable { inner, })
